@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math CAPTCHA</title>
+    <script>
+        async function loadCaptcha() {
+            const response = await fetch("/generate_math_captcha");
+            const data = await response.json();
+            document.getElementById("captcha-question").innerText = data.question;
+        }
+
+        async function verifyCaptcha() {
+            const answer = document.getElementById("captcha-answer").value;
+            const response = await fetch("/verify_math_captcha", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ answer: answer })
+            });
+
+            const result = await response.json();
+            document.getElementById("captcha-result").innerText = result.message;
+            if (result.success) {
+                loadCaptcha();  // Reload CAPTCHA if correct
+            }
+        }
+
+        window.onload = loadCaptcha;
+    </script>
+</head>
+<body>
+    <h2>Math CAPTCHA</h2>
+    <p id="captcha-question"></p>
+    <input type="text" id="captcha-answer" placeholder="Enter your answer">
+    <button onclick="verifyCaptcha()">Submit</button>
+    <p id="captcha-result"></p>
+</body>
+</html>
