@@ -5,16 +5,6 @@ This is a simple CAPTCHA API built using Flask that generates and verifies CAPTC
 1. **Generate CAPTCHA**: An endpoint that generates a random CAPTCHA text and returns the image URL.
 2. **Verify CAPTCHA**: An endpoint to verify the CAPTCHA text entered by the user.
 
-## Features
-
-- Random text CAPTCHA generation
-- CAPTCHA image generation using the `captcha` library
-- CAPTCHA verification endpoint
-- CORS support for cross-origin requests
-- Session management to store and verify the CAPTCHA text
-- Easy deployment with `gunicorn`
-
-## Setup
 
 ### Step 1: Install Required Libraries
 
@@ -99,3 +89,16 @@ json
 }
 ```
 
+Test the API
+🔤 Text CAPTCHA:
+http://127.0.0.1:5000/generate_captcha
+
+http://127.0.0.1:5000/verify_captcha/X5P7QK
+
+🧮 Math CAPTCHA:
+http://127.0.0.1:5000/math
+
+POST to /verify_math_captcha with answer in JSON.
+
+🧩 Slider CAPTCHA (Demo Page):
+Access the HTML frontend at /slider .

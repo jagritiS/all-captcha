@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Slider CAPTCHA</title>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; text-align: center; }
+    .slider-container { position: relative; width: 300px; margin: auto; }
+    .slider { width: 100%; }
+    .image-box {
+        position: relative;
+        width: 300px;
+        height: 150px;
+        background: url("/static/captcha_image.jpeg") no-repeat center;
+        background-size: cover;
+        border: 2px solid #ccc;
+        margin-bottom: 1rem;
+    }
+    .puzzle-piece {
+        position: absolute;
+        top: 40px;
+        width: 50px;
+        height: 50px;
+        background-color: rgba(255,255,255,0.8);
+        border: 2px solid #444;
+    }
+  </style>
+</head>
+<body>
+  <h2>Slider CAPTCHA</h2>
+  <div class="image-box">
+    <div class="puzzle-piece" id="puzzle-piece"></div>
+  </div>
+  <div class="slider-container">
+    <input type="range" min="0" max="250" value="0" class="slider" id="slider">
+  </div>
+  <br>
+  <button onclick="verifySlider()">Verify</button>
+  <p id="result"></p>
+
+  <script>
+    let target = 0;
+
+    async function loadCaptcha() {
+      const res = await fetch('/generate_slider_captcha');
+      const data = await res.json();
+      target = data.target_position; // In real app, don't expose this
+      console.log("Target (for debug):", target);
+    }
+
+    function movePuzzlePiece() {
+      const slider = document.getElementById("slider");
+      const piece = document.getElementById("puzzle-piece");
+      piece.style.left = `${slider.value}px`;
+    }
+
+    document.getElementById("slider").addEventListener("input", movePuzzlePiece);
+
+    async function verifySlider() {
+      const sliderValue = document.getElementById("slider").value;
+
+      const res = await fetch('/verify_slider_captcha', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ slider_value: sliderValue })
+      });
+
+      const result = await res.json();
+      document.getElementById("result").innerText = result.message;
+
+      if (result.success) {
+        alert("✅ CAPTCHA Passed!");
+      } else {
+        alert("❌ CAPTCHA Failed.");
+      }
+    }
+
+    window.onload = loadCaptcha;
+  </script>
+</body>
+</html>

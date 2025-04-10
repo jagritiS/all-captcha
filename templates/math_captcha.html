@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Math CAPTCHA</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 30px;
+      background: #f9f9f9;
+    }
+
+    .container {
+      max-width: 400px;
+      margin: auto;
+      background: #fff;
+      padding: 25px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border-radius: 10px;
+    }
+
+    input, button {
+      padding: 10px;
+      margin: 10px 0;
+      width: 100%;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    .message {
+      font-weight: bold;
+      margin-top: 15px;
+    }
+
+    .success {
+      color: green;
+    }
+
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>🧮 Math CAPTCHA</h2>
+
+    <button onclick="generateMathCaptcha()">Generate Math CAPTCHA</button>
+    <div id="questionBox" style="margin: 15px 0; font-size: 18px;"></div>
+
+    <input type="text" id="answerInput" placeholder="Enter your answer here" />
+    <button onclick="verifyAnswer()">Verify Answer</button>
+
+    <div id="message" class="message"></div>
+  </div>
+
+  <script>
+    let currentQuestion = "";
+
+    function generateMathCaptcha() {
+      fetch('/generate_math_captcha')
+        .then(response => response.json())
+        .then(data => {
+          currentQuestion = data.question;
+          document.getElementById("questionBox").innerText = `Solve: ${currentQuestion}`;
+          document.getElementById("message").innerText = '';
+          document.getElementById("answerInput").value = '';
+        });
+    }
+
+    function verifyAnswer() {
+      const answer = document.getElementById("answerInput").value;
+
+      fetch('/verify_math_captcha', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ answer: answer })
+      })
+      .then(response => response.json().then(data => ({status: response.status, body: data})))
+      .then(({status, body}) => {
+        const message = document.getElementById("message");
+        if (status === 200) {
+          message.innerText = body.message;
+          message.className = "message success";
+        } else {
+          message.innerText = body.message;
+          message.className = "message error";
+        }
+      });
+    }
+  </script>
+</body>
+</html>
