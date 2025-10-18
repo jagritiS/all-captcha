@@ -1,7 +1,7 @@
 from flask import Flask,render_template
-from text_captcha import text_captcha_bp
-from math_captcha import math_captcha_bp
-from slider_captcha import slider_captcha_bp
+from routes.text_captcha import text_captcha_bp
+from routes.math_captcha import math_captcha_bp
+from routes.slider_captcha import slider_captcha_bp
 app = Flask(__name__)
 app.secret_key = "supersecretkey"
 
